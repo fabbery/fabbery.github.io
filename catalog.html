@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalog — fabbery</title>
+  <meta name="description" content="fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.">
+  <!-- Направление въезда страницы: определяется до отрисовки, чтобы не было мигания -->
+  <script>
+    (function () {
+      try {
+        var o = ['home', 'workshop', 'catalog'], p = 'catalog',
+            l = sessionStorage.getItem('fabbery-nav-last');
+        if (l && l !== p && o.indexOf(l) > -1 && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+          document.documentElement.classList.add(o.indexOf(p) > o.indexOf(l) ? 'enter-right' : 'enter-left');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="catalog">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ghost" viewBox="0 0 240 230">
+    <g stroke="#2E2147" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path style="fill: var(--g, #FBFAFF)" d="M44 124 C26 112 18 92 24 80 C30 70 44 80 52 104" />
+      <path style="fill: var(--g, #FBFAFF)" d="M196 124 C214 112 222 92 216 80 C210 70 196 80 188 104" />
+      <path style="fill: var(--g, #FBFAFF)" d="M40 118 C40 64 76 30 120 30 C164 30 200 64 200 118 V196 C200 210 190 216 180 208 C170 200 160 200 152 210 C144 220 132 222 124 212 C116 202 104 202 96 212 C88 222 76 220 70 210 C62 198 50 200 44 208 C40 212 40 206 40 198 Z" />
+    </g>
+    <ellipse fill="#2E2147" cx="96" cy="112" rx="8" ry="11" />
+    <ellipse fill="#2E2147" cx="144" cy="112" rx="8" ry="11" />
+    <ellipse fill="#FFC2DC" cx="80" cy="134" rx="11" ry="6" />
+    <ellipse fill="#FFC2DC" cx="160" cy="134" rx="11" ry="6" />
+    <path fill="none" stroke="#2E2147" stroke-width="5" stroke-linecap="round" d="M110 132 Q120 144 130 132" />
+  </symbol>
+</svg>
+
+<header class="top" id="siteHeader"></header>
+
+<main class="wrap">
+  <section class="panel panel--pink cat-head">
+    <h1 data-i18n="nav.catalog">Catalog</h1>
+    <p class="lead" data-i18n="catalog.lead"></p>
+  </section>
+  <!-- карточки строятся из assets/catalog.js -->
+  <div class="catalog" data-catalog></div>
+</main>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/script.js"></script>
+</body>
+</html>

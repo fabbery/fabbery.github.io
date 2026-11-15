@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workshop — fabbery</title>
+  <meta name="description" content="fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.">
+  <!-- Направление въезда страницы: определяется до отрисовки, чтобы не было мигания -->
+  <script>
+    (function () {
+      try {
+        var o = ['home', 'workshop', 'catalog'], p = 'workshop',
+            l = sessionStorage.getItem('fabbery-nav-last');
+        if (l && l !== p && o.indexOf(l) > -1 && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+          document.documentElement.classList.add(o.indexOf(p) > o.indexOf(l) ? 'enter-right' : 'enter-left');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="workshop">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ghost" viewBox="0 0 240 230">
+    <g stroke="#2E2147" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path style="fill: var(--g, #FBFAFF)" d="M44 124 C26 112 18 92 24 80 C30 70 44 80 52 104" />
+      <path style="fill: var(--g, #FBFAFF)" d="M196 124 C214 112 222 92 216 80 C210 70 196 80 188 104" />
+      <path style="fill: var(--g, #FBFAFF)" d="M40 118 C40 64 76 30 120 30 C164 30 200 64 200 118 V196 C200 210 190 216 180 208 C170 200 160 200 152 210 C144 220 132 222 124 212 C116 202 104 202 96 212 C88 222 76 220 70 210 C62 198 50 200 44 208 C40 212 40 206 40 198 Z" />
+    </g>
+    <ellipse fill="#2E2147" cx="96" cy="112" rx="8" ry="11" />
+    <ellipse fill="#2E2147" cx="144" cy="112" rx="8" ry="11" />
+    <ellipse fill="#FFC2DC" cx="80" cy="134" rx="11" ry="6" />
+    <ellipse fill="#FFC2DC" cx="160" cy="134" rx="11" ry="6" />
+    <path fill="none" stroke="#2E2147" stroke-width="5" stroke-linecap="round" d="M110 132 Q120 144 130 132" />
+  </symbol>
+</svg>
+
+<header class="top" id="siteHeader"></header>
+
+<main class="wrap">
+  <section class="panel panel--blueprint ws-head">
+    <h1 data-i18n="nav.workshop">Workshop</h1>
+    <p class="lead" data-i18n="workshop.lead"></p>
+  </section>
+
+  <!-- Истории коллекций. Каждая — <article class="story">: сверху кнопка, которая разворачивает историю
+       прямо здесь, ниже — сама история. Чтобы добавить новую: скопируй <article> целиком,
+       поменяй id (story-...), название, тексты и фото.
+       Фото: вместо пустого <div class="snap__img" ...></div> вставь
+       <img class="snap__img" src="photos/...jpg" alt="что на фото"> -->
+  <section class="collections">
+    <header class="collections__head">
+      <h2 data-i18n="workshop.collections"></h2>
+      <p data-i18n="workshop.collectionsText"></p>
+    </header>
+
+  <article class="story" id="story-tiny-ghosts">
+    <button class="story__toggle" type="button" aria-expanded="false" aria-controls="story-tiny-ghosts-body">
+      <span class="story__icon story__icon--mint"><svg viewBox="-10 -14 260 244" style="--g:#FBFAFF" aria-hidden="true"><use href="#ghost" /></svg></span>
+      <span class="story__name"><b>tiny ghosts</b><i>The first collection: rounded little ghosts with raised arms</i></span>
+      <span class="story__open"><span class="story__word" data-i18n="workshop.open"></span><span class="story__word story__word--close" data-i18n="workshop.close"></span><span class="story__plus" aria-hidden="true"></span></span>
+    </button>
+    <div class="story__body" id="story-tiny-ghosts-body" role="region">
+      <div class="story__inner">
+          <header class="story__head">
+            <p class="story__tag">tiny ghosts</p>
+            <h2>How tiny ghosts were born</h2>
+          </header>
+
+          <section class="story__part story__part--intro">
+            <h3>Foreword</h3>
+            <p>A few words before the story: why this collection exists and why it had to be ghosts. This is the place for the warm, personal part, the way you would tell it to a friend</p>
+          </section>
+
+          <section class="story__part">
+            <h3>The idea</h3>
+            <p>What the ghosts were supposed to be from the very start: small, rounded, with raised arms and kaomoji faces, easy to print and nice to hold</p>
+          </section>
+
+          <section class="story__part story__part--wide">
+            <h3>First sketches</h3>
+            <p>The very first drawings, including the ones that did not work out</p>
+            <div class="snaps">
+              <figure class="snap" style="--r:-2deg"><div class="snap__img" data-ph="first sketch"></div><figcaption>The very first one</figcaption></figure>
+              <figure class="snap" style="--r:1.5deg"><div class="snap__img" data-ph="sketch"></div><figcaption>Too many details</figcaption></figure>
+              <figure class="snap" style="--r:-1deg"><div class="snap__img" data-ph="sketch"></div><figcaption>Almost there</figcaption></figure>
+            </div>
+          </section>
+
+          <section class="story__part story__part--wide">
+            <h3>How it was made</h3>
+            <p>From the rough shape in Blender to the final model: what changed along the way and why</p>
+            <div class="snaps snaps--two">
+              <figure class="snap" style="--r:1deg"><div class="snap__img" data-ph="Blender screenshot"></div><figcaption>The rough shape</figcaption></figure>
+              <figure class="snap" style="--r:-1.5deg"><div class="snap__img" data-ph="Blender screenshot"></div><figcaption>The final model</figcaption></figure>
+            </div>
+          </section>
+
+          <section class="story__part story__part--wide">
+            <h3>Other colors</h3>
+            <p>The same ghost in different colors: some made it into the catalog, some did not</p>
+            <ul class="swatches">
+              <li><svg viewBox="-10 -14 260 244" style="--g:#FBFAFF" aria-hidden="true"><use href="#ghost" /></svg><span>White</span><em data-i18n="workshop.kept"></em></li>
+              <li><svg viewBox="-10 -14 260 244" style="--g:#D6C8FF" aria-hidden="true"><use href="#ghost" /></svg><span>Lilac</span><em data-i18n="workshop.kept"></em></li>
+              <li><svg viewBox="-10 -14 260 244" style="--g:#FF8A5C" aria-hidden="true"><use href="#ghost" /></svg><span>Orange</span><em class="is-out" data-i18n="workshop.out"></em></li>
+              <li><svg viewBox="-10 -14 260 244" style="--g:#7FA8E8" aria-hidden="true"><use href="#ghost" /></svg><span>Blue</span><em class="is-out" data-i18n="workshop.out"></em></li>
+            </ul>
+          </section>
+
+          <section class="story__part story__part--wide">
+            <h3>Failed prints</h3>
+            <p>Every model has its own graveyard. Here is the one for tiny ghosts</p>
+            <div class="snaps snaps--fails">
+              <figure class="snap" style="--r:2deg"><div class="snap__img" data-ph="failed print"></div><figcaption>Came off the bed halfway</figcaption></figure>
+              <figure class="snap" style="--r:-1.5deg"><div class="snap__img" data-ph="failed print"></div><figcaption>A ghost without a face</figcaption></figure>
+              <figure class="snap" style="--r:1deg"><div class="snap__img" data-ph="failed print"></div><figcaption>Spaghetti instead of arms</figcaption></figure>
+            </div>
+          </section>
+
+          <footer class="story__end">
+            <p data-i18n="workshop.end"></p>
+            <a class="half__cta" href="catalog.html" data-i18n="workshop.toCatalog"></a>
+          </footer>
+      </div>
+    </div>
+  </article>
+
+  <article class="story" id="story-pumpkin">
+    <button class="story__toggle" type="button" aria-expanded="false" aria-controls="story-pumpkin-body">
+      <span class="story__icon story__icon--lemon"><svg viewBox="-10 -14 260 244" style="--g:#FF8A5C" aria-hidden="true"><use href="#ghost" /></svg></span>
+      <span class="story__name"><b>Halloween little pumpkin</b><i>In progress: the next collection, being made right now</i></span>
+      <span class="story__open"><span class="story__word" data-i18n="workshop.open"></span><span class="story__word story__word--close" data-i18n="workshop.close"></span><span class="story__plus" aria-hidden="true"></span></span>
+    </button>
+    <div class="story__body" id="story-pumpkin-body" role="region">
+      <div class="story__inner">
+        <header class="story__head">
+          <p class="story__tag story__tag--wip" data-i18n="workshop.wip"></p>
+          <h2>The pumpkins are on the bench</h2>
+        </header>
+        <section class="story__part story__part--intro">
+          <h3>Foreword</h3>
+          <p>What this collection is going to be and why pumpkins came next. The story grows as the models do</p>
+        </section>
+        <section class="story__part story__part--wide">
+          <h3>First sketches</h3>
+          <p>Where the pumpkins are right now</p>
+          <div class="snaps">
+            <figure class="snap" style="--r:-1.5deg"><div class="snap__img" data-ph="first sketch"></div><figcaption>The very first one</figcaption></figure>
+            <figure class="snap" style="--r:1deg"><div class="snap__img" data-ph="Blender screenshot"></div><figcaption>Work in progress</figcaption></figure>
+          </div>
+        </section>
+      </div>
+    </div>
+  </article>
+  </section>
+</main>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/script.js"></script>
+</body>
+</html>
