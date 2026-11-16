@@ -2,7 +2,7 @@
 # Единственное, что нужно поменять: NICKNAME в строке repo — твой ник на GitHub.
 backend:
   name: github
-  repo: NICKNAME/NICKNAME.github.io
+  repo: fabbery/fabbery.github.io
   branch: main
   commit_messages:
     update: "Update {{collection}}"
