@@ -1,4 +1,5 @@
-/* Тексты сайта на всех языках.
+/* Тексты интерфейса сайта (кнопки, заголовки разделов, подписи).
+   Модели, истории и ссылки сюда не входят: они в папке content и редактируются в админке (/admin).
    Чтобы добавить язык: скопируй блок en, поменяй код (например de),
    name и переведи строки. Кнопка языка подхватит его сама.
 
@@ -18,14 +19,22 @@ window.I18N = {
     'meta.description': 'fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.',
     'nav.label': 'Site pages',
     'nav.home': 'fabbery, home page',
-    'nav.menu': 'Menu',
     'nav.open': 'Site sections',
     'nav.homeItem': 'Home',
     'nav.catalog': 'Catalog',
     'nav.workshop': 'Workshop',
 
     'home.slogan': 'Just a simple 3D world',
+    'bar.count.one': '{n} model released',
+    'bar.count.many': '{n} models released',
+    'theme.toDark': 'Switch to dark theme',
+    'theme.toLight': 'Switch to light theme',
     'home.tagline': 'Designs for 3D printing, always',
+    'latest.title': 'Latest designs',
+    'latest.all': 'See all in the catalog',
+    'latest.released': 'Released {date}',
+    'latest.prev': 'Previous designs',
+    'latest.next': 'Next designs',
     'home.workshop.title': 'Workshop',
     'home.workshop.text': 'Stories of selected models: how they were made, first sketches and the prints that failed',
     'home.workshop.cta': 'Open workshop',
@@ -40,14 +49,14 @@ window.I18N = {
     'where.makerworld': 'Every model, free to download',
     'where.pinterest': 'Renders of finished models',
     'where.patreon': 'Support my work and get a commercial license',
-    'where.open': 'Open',
+    'where.click': 'Click to open',
+    'where.tap': 'Tap to open',
     'copyright': '© 2026 fabbery. All designs and photos are original work by fabbery',
     'mail.title': 'Have an idea or a proposal?',
     'mail.text': 'Want to suggest a model, team up or make a commercial offer? Write to me by email',
     'mail.copy': 'Copy',
     'mail.copied': 'Copied',
 
-    'soon': 'This page is coming soon.',
     'workshop.lead': 'Stories of selected models: the idea behind them, first sketches, other colors and the prints that failed along the way',
     'workshop.collections': 'Collections',
     'workshop.collectionsText': 'Open a collection to read its story right here',
@@ -56,14 +65,14 @@ window.I18N = {
     'workshop.wip': 'In progress',
     'workshop.kept': 'In the catalog',
     'workshop.out': 'Did not make it',
-    'workshop.end': 'All tiny ghosts are free to print',
     'workshop.toCatalog': 'See them in the catalog',
     'catalog.lead': 'Everything that is released and ready to print, free to download on MakerWorld',
     'catalog.models': 'models',
     'catalog.model': 'model',
     'catalog.get': 'Get on MakerWorld',
     'catalog.story': 'Read the story',
-    'catalog.next': 'Coming next',
+    'catalog.next': 'Coming soon',
+    'catalog.note': 'Not every model has a story. When it does, you will find a “Read the story” link on its card',
     'lang.button': 'Site language: English. Change language',
     'lang.menu': 'Choose language'
   }

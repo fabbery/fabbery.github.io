@@ -1,0 +1,196 @@
+{
+  "stories": [
+    {
+      "id": "tiny-ghosts",
+      "name": "tiny ghosts",
+      "subtitle": "The first collection: rounded little ghosts with raised arms",
+      "status": "released",
+      "icon_bg": "mint",
+      "icon_color": "#FBFAFF",
+      "title": "How tiny ghosts were born",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "Foreword"
+        },
+        {
+          "type": "text",
+          "body": "A few words before the story: why this collection exists and why it had to be ghosts. This is the place for the warm, personal part, the way you would tell it to a friend",
+          "large": true
+        },
+        {
+          "type": "heading",
+          "text": "The idea"
+        },
+        {
+          "type": "text",
+          "body": "What the ghosts were supposed to be from the very start: small, rounded, with raised arms and kaomoji faces, easy to print and nice to hold",
+          "large": false
+        },
+        {
+          "type": "heading",
+          "text": "First sketches"
+        },
+        {
+          "type": "text",
+          "body": "The very first drawings, including the ones that did not work out",
+          "large": false
+        },
+        {
+          "type": "photos",
+          "layout": "three",
+          "tape": "yellow",
+          "photos": [
+            {
+              "image": "",
+              "caption": "The very first one"
+            },
+            {
+              "image": "",
+              "caption": "Too many details"
+            },
+            {
+              "image": "",
+              "caption": "Almost there"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "How it was made"
+        },
+        {
+          "type": "text",
+          "body": "From the rough shape in Blender to the final model: what changed along the way and why",
+          "large": false
+        },
+        {
+          "type": "photos",
+          "layout": "two",
+          "tape": "yellow",
+          "photos": [
+            {
+              "image": "",
+              "caption": "The rough shape"
+            },
+            {
+              "image": "",
+              "caption": "The final model"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Other colors"
+        },
+        {
+          "type": "text",
+          "body": "The same ghost in different colors: some made it into the catalog, some did not",
+          "large": false
+        },
+        {
+          "type": "colors",
+          "colors": [
+            {
+              "name": "White",
+              "color": "#FBFAFF",
+              "kept": true
+            },
+            {
+              "name": "Lilac",
+              "color": "#D6C8FF",
+              "kept": true
+            },
+            {
+              "name": "Orange",
+              "color": "#FF8A5C",
+              "kept": false
+            },
+            {
+              "name": "Blue",
+              "color": "#7FA8E8",
+              "kept": false
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Failed prints"
+        },
+        {
+          "type": "text",
+          "body": "Every model has its own graveyard. Here is the one for tiny ghosts",
+          "large": false
+        },
+        {
+          "type": "photos",
+          "layout": "three",
+          "tape": "pink",
+          "photos": [
+            {
+              "image": "",
+              "caption": "Came off the bed halfway"
+            },
+            {
+              "image": "",
+              "caption": "A ghost without a face"
+            },
+            {
+              "image": "",
+              "caption": "Spaghetti instead of arms"
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "All tiny ghosts are free to print",
+          "button": true
+        }
+      ]
+    },
+    {
+      "id": "pumpkin",
+      "name": "Halloween little pumpkin",
+      "subtitle": "In progress: the next collection, being made right now",
+      "status": "wip",
+      "icon_bg": "lemon",
+      "icon_color": "#FF8A5C",
+      "title": "The pumpkins are on the bench",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "Foreword"
+        },
+        {
+          "type": "text",
+          "body": "What this collection is going to be and why pumpkins came next. The story grows as the models do",
+          "large": true
+        },
+        {
+          "type": "heading",
+          "text": "First sketches"
+        },
+        {
+          "type": "text",
+          "body": "Where the pumpkins are right now",
+          "large": false
+        },
+        {
+          "type": "photos",
+          "layout": "three",
+          "tape": "yellow",
+          "photos": [
+            {
+              "image": "",
+              "caption": "The very first one"
+            },
+            {
+              "image": "",
+              "caption": "Work in progress"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,8 @@
-/* fabbery — верхняя полоса, подвал, языки, переходы и заставка.
-   Полоса и подвал собираются здесь, поэтому новую страницу
-   достаточно добавить в список PAGES (и её текст в i18n.js). */
+/* fabbery — всё поведение сайта:
+   шапка и меню, светлая/тёмная тема, тексты (i18n.js), содержимое из папки content
+   (каталог, лента последних дизайнов, истории мастерской, ссылки), переходы между
+   страницами без перезагрузки, призраки, заставка на главной.
+   Новую страницу достаточно добавить в список PAGES (и её тексты в i18n.js). */
 (() => {
   const PAGES = [
     { id: 'workshop', href: 'workshop.html' },
@@ -22,15 +24,14 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch {} }
   };
   const session = {
-    get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
-    set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
-    del(k) { try { sessionStorage.removeItem(k); } catch {} }
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch {} }
   };
   const t = (lang, key) => DICT[lang]?.[key] ?? DICT[FALLBACK][key] ?? '';
   const nextFrame = fn => requestAnimationFrame(() => requestAnimationFrame(fn));
 
   /* ---------- верхняя полоса ----------
-     Слева круглая кнопка разделов, по центру название, справа круглая кнопка языка. */
+     Слева кнопка разделов, по центру название, слоган и счётчик моделей,
+     справа кнопка темы (и кнопка языка — появится, когда языков станет больше одного). */
   const bar = document.getElementById('siteHeader');
   bar.className = 'bar';
   bar.dataset.page = page;
@@ -50,14 +51,48 @@
           </nav>
         </div>
       </div>
-      <a class="brand" href="index.html" data-go="home" data-i18n="brand" data-i18n-aria="nav.home">fabbery</a>
+      <div class="bar__center">
+        <a class="brand" href="index.html" data-go="home" data-i18n="brand" data-i18n-aria="nav.home">fabbery</a>
+        <p class="bar__sub"><span data-i18n="home.slogan">Just a simple 3D world</span><a class="bar__count" href="catalog.html" data-go="catalog"></a></p>
+      </div>
+      <div class="bar__right">
+      <button class="rb rb--theme" type="button">
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      </button>
       <div class="dd dd--lang">
         <button class="rb rb--lang" type="button" aria-expanded="false" aria-controls="langPanel"></button>
         <div class="dd__panel" id="langPanel">
           <div class="dd__inner" role="menu"></div>
         </div>
       </div>
+      </div>
     </div>`;
+
+  /* ---------- светлая и тёмная тема ----------
+     Иконка показывает текущую тему: солнце — светлая, месяц — тёмная.
+     Выбор запоминается; пока человек ничего не выбрал, тема следует за системой. */
+  const themeBtn = bar.querySelector('.rb--theme');
+  const darkMq = matchMedia('(prefers-color-scheme: dark)');
+  const theme = () => root.dataset.theme === 'dark' ? 'dark' : 'light';
+  const themeLabel = () => themeBtn.setAttribute('aria-label', t(current, theme() === 'dark' ? 'theme.toLight' : 'theme.toDark'));
+  function setTheme(mode, save) {
+    root.classList.add('theme-switching');
+    root.dataset.theme = mode;
+    if (save) store.set('fabbery-theme', mode);
+    themeLabel();
+    setTimeout(() => root.classList.remove('theme-switching'), 450);
+  }
+  themeBtn.addEventListener('click', () => setTheme(theme() === 'dark' ? 'light' : 'dark', true));
+  darkMq.addEventListener?.('change', e => { if (!store.get('fabbery-theme')) setTheme(e.matches ? 'dark' : 'light', false); });
+
+  // счётчик выпущенных моделей в шапке
+  function updateCount() {
+    const el = bar.querySelector('.bar__count');
+    const n = (window.CATALOG?.collections || []).reduce((s, c) => s + (c.models || []).length, 0);
+    el.hidden = !n;
+    el.textContent = t(current, n === 1 ? 'bar.count.one' : 'bar.count.many').replace('{n}', n);
+  }
 
   /* ---------- маленькая строчка об авторских правах внизу каждой страницы ----------
      Стоит вне <main>, поэтому при перелистывании страниц не перерисовывается */
@@ -78,22 +113,13 @@
       state.open = v;
       dd.classList.toggle('is-open', v);
       button.setAttribute('aria-expanded', String(v));
-      if (v) { dropdowns.forEach(o => o !== api && o.close()); onOpen && onOpen(); }
+      if (v) { dropdowns.forEach(o => o !== api && o.close()); onOpen?.(); }
     };
     const api = {
       dd, button,
       get open() { return state.open; },
       get pinned() { return state.pinned; },
-      close() { state.pinned = false; dd.classList.remove('is-pinned'); set(false); },
-      // открыть сразу, без анимации (когда список был открыт на прошлой странице)
-      restore(pin) {
-        dd.classList.add('no-anim');
-        state.pinned = pin; dd.classList.toggle('is-pinned', pin);
-        set(true);
-        nextFrame(() => dd.classList.remove('no-anim'));
-      },
-      // закрыть, если открыт только наведением, а мыши над ним нет
-      closeIfUnhovered() { if (!state.pinned) state.timer = setTimeout(() => set(false), 220); }
+      close() { state.pinned = false; dd.classList.remove('is-pinned'); set(false); }
     };
     button.addEventListener('click', () => {
       if (state.pinned || (state.open && !canHover.matches)) { api.close(); state.blocked = canHover.matches; }
@@ -116,7 +142,7 @@
     return api;
   }
   document.addEventListener('click', e => {
-    dropdowns.forEach(d => { if (d.open && !d.dd.contains(e.target) && (!canHover.matches || true)) d.close(); });
+    dropdowns.forEach(d => { if (d.open && !d.dd.contains(e.target)) d.close(); });
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
@@ -148,38 +174,222 @@
   }
   const menu = makeDropdown(menuDd, () => { placePill(false); prefetch(); });
 
-  /* ---------- каталог: карточки из assets/catalog.js ---------- */
+  /* ---------- содержимое сайта: лежит в папке content и редактируется в админке (/admin) ----------
+     catalog.json — модели и коллекции, stories.json — истории мастерской, site.json — ссылки и почта.
+     no-cache: браузер каждый раз сверяется с сервером, поэтому правки из админки видны сразу после публикации. */
+  window.CATALOG = null; window.STORIES = null; window.SITE = null;
+  const getJSON = name => fetch('content/' + name + '.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : null).catch(() => null);
+  const contentReady = Promise.all([getJSON('catalog'), getJSON('stories'), getJSON('site')])
+    .then(([catalog, stories, site]) => { window.CATALOG = catalog; window.STORIES = stories; window.SITE = site; });
+
+  /* ---------- каталог: коллекции и карточки из content/catalog.json ---------- */
   const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const ghostSvg = (color, cls = '') => `<svg${cls ? ` class="${cls}"` : ''} viewBox="-10 -14 260 244" style="--g:${esc(color || '#FBFAFF')}" aria-hidden="true"><use href="#ghost" /></svg>`;
+  // ссылка на историю — только если такая история есть в мастерской (удалённая история = нет кнопки)
+  const storyAnchor = id => 'story-' + String(id).replace(/[^a-z0-9-]/gi, '-');
+  const storyHref = id => id && (window.STORIES?.stories || []).some(s => s && s.id === id) ? `workshop.html#${storyAnchor(id)}` : '';
+  const visibleUpcoming = () => (window.CATALOG?.upcoming || []).filter(u => u && u.name && u.show !== false);
   function renderCatalog(scope) {
     const box = scope.querySelector('[data-catalog]');
     const data = window.CATALOG;
     if (!box || !data) return;
-    const ghost = color => `<svg class="card__ghost" viewBox="-10 -14 260 244" style="--g:${esc(color || '#FBFAFF')}" aria-hidden="true"><use href="#ghost" /></svg>`;
-    box.innerHTML = data.collections.map(c => `
+    const card = m => {
+      const story = storyHref(m.story);
+      return `
+          <li class="card card--${esc(m.bg || 'mint')}">
+            <div class="card__pic">${m.photo ? `<img src="${esc(m.photo)}" alt="${esc(m.name)}" loading="lazy">` : ghostSvg(m.ghost, 'card__ghost')}</div>
+            <h3>${esc(m.name)}</h3>
+            ${m.text ? `<p>${esc(m.text)}</p>` : ''}
+            <div class="card__links">
+              ${m.link ? `<a href="${esc(m.link)}" target="_blank" rel="noopener" data-i18n="catalog.get"></a>` : ''}
+              ${story ? `<a class="card__story" href="${story}" data-i18n="catalog.story"></a>` : ''}
+            </div>
+          </li>`;
+    };
+    // пустые коллекции не показываются, пока в них не появится хотя бы одна модель
+    const colls = (data.collections || []).filter(c => c && c.name && (c.models || []).length).map(c => `
       <section class="coll">
         <header class="coll__head">
           <h2>${esc(c.name)}</h2>
-          <p>${esc(c.text)}</p>
+          ${c.text ? `<p>${esc(c.text)}</p>` : ''}
           <span class="coll__count">${c.models.length} <span data-i18n="${c.models.length === 1 ? 'catalog.model' : 'catalog.models'}"></span></span>
         </header>
-        <ul class="cards">
-          ${c.models.map(m => `
-          <li class="card card--${esc(m.bg || 'mint')}">
-            <div class="card__pic">${m.photo ? `<img src="${esc(m.photo)}" alt="${esc(m.name)}" loading="lazy">` : ghost(m.ghost)}</div>
-            <h3>${esc(m.name)}</h3>
-            <p>${esc(m.text)}</p>
-            <div class="card__links">
-              ${m.link ? `<a href="${esc(m.link)}" target="_blank" rel="noopener" data-i18n="catalog.get"></a>` : ''}
-              ${(m.story || c.story) ? `<a class="card__story" href="workshop.html#story-${esc(m.story || c.story)}" data-i18n="catalog.story"></a>` : ''}
-            </div>
-          </li>`).join('')}
-        </ul>
-      </section>`).join('') + (data.next ? `
-      <a class="next" href="workshop.html">
-        <span class="next__label" data-i18n="catalog.next"></span>
-        <b>${esc(data.next.name)}</b>
-        <span>${esc(data.next.text)}</span>
-      </a>` : '');
+        <ul class="cards">${c.models.filter(m => m && m.name).map(card).join('')}</ul>
+      </section>`).join('');
+    // скоро выйдут: карточка ведёт к истории, если она выбрана
+    const up = visibleUpcoming();
+    const soon = up.length ? `
+      <section class="coll upcoming">
+        <header class="coll__head"><h2 data-i18n="catalog.next"></h2></header>
+        <ul class="cards">${up.map(u => {
+          const story = storyHref(u.story);
+          const tag = story ? 'a' : 'div';
+          return `
+          <li><${tag} class="next card--${esc(u.bg || 'lemon')}"${story ? ` href="${story}"` : ''}>
+            <span class="card__pic">${u.photo ? `<img src="${esc(u.photo)}" alt="${esc(u.name)}" loading="lazy">` : ghostSvg(u.ghost, 'card__ghost')}</span>
+            <b>${esc(u.name)}</b>
+            ${u.text ? `<span>${esc(u.text)}</span>` : ''}
+            ${story ? '<em data-i18n="catalog.story"></em>' : ''}
+          </${tag}></li>`;
+        }).join('')}</ul>
+      </section>` : '';
+    box.innerHTML = colls + soon;
+  }
+
+  /* ---------- лента последних дизайнов на главной ----------
+     Карточки медленно едут сами; стрелки и свайп листают; при наведении или после нажатия лента замирает */
+  let latestStop = null;
+  // '2026-11-14' → 'Nov 14, 2026', '2026-11' → 'Nov 2026'
+  function releasedText(v) {
+    const [y, m, d] = String(v).split('-').map(Number);
+    if (!y || !m) return String(v);
+    const date = new Date(Date.UTC(y, m - 1, d || 1));
+    const opts = d ? { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' } : { month: 'short', year: 'numeric', timeZone: 'UTC' };
+    try { return date.toLocaleDateString(current || 'en', opts); } catch { return String(v); }
+  }
+  function renderLatest(scope) {
+    const box = scope.querySelector('[data-latest]');
+    const data = window.CATALOG;
+    if (!box || !data) return;
+    // самые свежие — по дате выпуска; модели без даты идут после, новые снизу списка считаются свежее
+    const models = (data.collections || []).flatMap(c => (c.models || []).filter(m => m && m.name).map(m => ({ ...m, collection: c.name })))
+      .map((m, i) => ({ m, i }))
+      .sort((a, b) => (b.m.released || '').localeCompare(a.m.released || '') || b.i - a.i)
+      .map(x => x.m).slice(0, data.latest || 8);
+    if (!models.length) { box.hidden = true; return; }
+    const tile = (m, hidden) => `
+      <a class="tile tile--${esc(m.bg || 'mint')}" href="catalog.html"${hidden ? ' aria-hidden="true" tabindex="-1"' : ''}>
+        <span class="tile__pic">${m.photo ? `<img src="${esc(m.photo)}" alt="" loading="lazy">` : ghostSvg(m.ghost || '#FFFFFF')}</span>
+        <b>${esc(m.name)}</b><small>${esc(m.collection)}</small>${m.released ? `<time datetime="${esc(m.released)}">${esc(t(current, 'latest.released').replace('{date}', releasedText(m.released)))}</time>` : ''}
+      </a>`;
+    // набор повторяется, чтобы лента шла по кругу; копии скрыты от экранных читалок
+    const copies = Math.max(2, Math.ceil(10 / models.length));
+    const view = box.querySelector('.latest__view'), track = box.querySelector('.latest__track');
+    track.innerHTML = Array.from({ length: copies * 2 }, (_, k) => models.map(m => tile(m, k > 0)).join('')).join('');
+    let half = 0, pos = 0, paused = 0, hover = false, raf = 0, last = 0;
+    // длина одного круга — точное расстояние между первой карточкой и её копией во второй половине
+    // (scrollWidth / 2 не подходит: в нём есть поля ленты, из-за них лента дёргалась при перескоке)
+    const measure = () => {
+      const tiles = track.children, n = tiles.length / 2;
+      half = tiles[n] ? tiles[n].offsetLeft - tiles[0].offsetLeft : 0;
+    };
+    const wrap = () => { if (half && view.scrollLeft >= half) view.scrollLeft -= half; if (view.scrollLeft < 1 && half) view.scrollLeft += half; };
+    const tick = now => {
+      raf = requestAnimationFrame(tick);
+      // ширину меряем, когда лента уже на странице (после перелистывания она вставляется позже)
+      if (!half) { if (!view.isConnected) return; measure(); if (!half) return; view.scrollLeft = 1; pos = 1; }
+      const dt = Math.min(50, now - (last || now)); last = now;
+      if (hover || now < paused || reduceMotion || document.hidden) { pos = view.scrollLeft; return; }
+      pos = (Math.abs(pos - view.scrollLeft) > 2 ? view.scrollLeft : pos) + dt * .03;
+      view.scrollLeft = pos; wrap(); pos = view.scrollLeft;
+    };
+    raf = requestAnimationFrame(tick);
+    const hold = ms => { paused = performance.now() + ms; };
+    const step = () => (track.querySelector('.tile')?.offsetWidth || 150) + 16;
+    box.querySelector('.latest__arrow--next').onclick = () => { hold(4000); wrap(); view.scrollBy({ left: step() * 2, behavior: reduceMotion ? 'instant' : 'smooth' }); };
+    box.querySelector('.latest__arrow--prev').onclick = () => { hold(4000); if (view.scrollLeft < step() * 2) view.scrollLeft += half; view.scrollBy({ left: -step() * 2, behavior: reduceMotion ? 'instant' : 'smooth' }); };
+    view.addEventListener('scroll', () => { if (performance.now() < paused) wrap(); }, { passive: true });
+    view.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
+    view.addEventListener('pointerleave', () => { hover = false; });
+    view.addEventListener('touchstart', () => hold(5000), { passive: true });
+    view.addEventListener('wheel', () => hold(4000), { passive: true });
+    box.addEventListener('focusin', () => hold(8000));
+    addEventListener('resize', measure);
+    latestStop = () => { cancelAnimationFrame(raf); removeEventListener('resize', measure); };
+  }
+
+  /* ---------- истории мастерской из content/stories.json ----------
+     История — это набор блоков в любом порядке: заголовок, подзаголовок, текст,
+     фото в рамках, цвета, плашка в конце. Блоки добавляются в админке. */
+
+  // текст из админки: абзацы, **жирный**, *курсив*, [ссылки](https://…) и списки «- пункт»
+  const inline = s => esc(s)
+    .replace(/\\([\\`*_[\]()#+\-.!])/g, (_, ch) => `&#${ch.charCodeAt(0)};`)
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label, url) => {
+      const href = url.replace(/&amp;/g, '&');
+      if (!/^(https?:|mailto:|\/|#|[\w-]+\.html)/i.test(href)) return label;
+      const ext = /^https?:/i.test(href);
+      return `<a href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}>${label}</a>`;
+    })
+    .replace(/(\*\*|__)(.+?)\1/g, '<strong>$2</strong>')
+    .replace(/(^|[^\w*])[*_](?!\s)(.+?)[*_](?!\w)/g, '$1<em>$2</em>')
+    .replace(/ {2,}$|\\$/gm, '').replace(/\n/g, '<br>');
+  const md = text => String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map(p => {
+    const lines = p.split('\n');
+    if (lines.every(l => /^\s*[-*+]\s+/.test(l))) return `<ul>${lines.map(l => `<li>${inline(l.replace(/^\s*[-*+]\s+/, ''))}</li>`).join('')}</ul>`;
+    if (lines.every(l => /^\s*\d+[.)]\s+/.test(l))) return `<ol>${lines.map(l => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ''))}</li>`).join('')}</ol>`;
+    return `<p>${inline(p)}</p>`;
+  }).join('');
+
+  const TILT = [-2, 1.5, -1, 2, -1.5, 1];
+  const BLOCKS = {
+    heading: b => b.text ? `<h3 class="story__h">${esc(b.text)}</h3>` : '',
+    subheading: b => b.text ? `<h4 class="story__sub">${esc(b.text)}</h4>` : '',
+    text: b => b.body ? `<div class="story__text${b.large ? ' story__text--large' : ''}">${md(b.body)}</div>` : '',
+    photos: b => {
+      const list = (b.photos || []).filter(s => s && (s.image || s.caption));
+      if (!list.length) return '';
+      const layout = ['one', 'two', 'three'].includes(b.layout) ? b.layout : 'three';
+      return `<div class="snaps snaps--${layout}${b.tape === 'pink' ? ' snaps--pink' : ''}">${list.map((s, i) => `
+        <figure class="snap" style="--r:${TILT[i % TILT.length]}deg">
+          ${s.image ? `<img class="snap__img" src="${esc(s.image)}" alt="${esc(s.caption || '')}" loading="lazy">` : '<div class="snap__img" data-ph></div>'}
+          ${s.caption ? `<figcaption>${esc(s.caption)}</figcaption>` : ''}
+        </figure>`).join('')}</div>`;
+    },
+    colors: b => {
+      const list = (b.colors || []).filter(c => c && c.name);
+      return list.length ? `<ul class="swatches">${list.map(c => `
+        <li>${ghostSvg(c.color)}<span>${esc(c.name)}</span><em${c.kept ? '' : ' class="is-out"'} data-i18n="workshop.${c.kept ? 'kept' : 'out'}"></em></li>`).join('')}</ul>` : '';
+    },
+    callout: b => b.text ? `<div class="story__end"><p>${esc(b.text)}</p>${b.button ? '<a class="half__cta" href="catalog.html" data-i18n="workshop.toCatalog"></a>' : ''}</div>` : ''
+  };
+  function renderStories(scope) {
+    const box = scope.querySelector('[data-stories]');
+    const list = window.STORIES?.stories;
+    if (!box || !list) return;
+    box.innerHTML = list.filter(s => s && s.id && s.name).map(s => {
+      const id = storyAnchor(s.id);
+      const icon = s.icon_photo ? `<img src="${esc(s.icon_photo)}" alt="" loading="lazy">` : ghostSvg(s.icon_color);
+      return `
+      <article class="story" id="${id}">
+        <button class="story__toggle" id="${id}-toggle" type="button" aria-expanded="false" aria-controls="${id}-body">
+          <span class="story__icon story__icon--${esc(s.icon_bg || 'mint')}${s.icon_photo ? ' story__icon--photo' : ''}">${icon}</span>
+          <span class="story__name"><b>${esc(s.name)}</b>${s.subtitle ? `<i>${esc(s.subtitle)}</i>` : ''}</span>
+          <span class="story__open"><span class="story__word" data-i18n="workshop.open"></span><span class="story__word story__word--close" data-i18n="workshop.close"></span><span class="story__plus" aria-hidden="true"></span></span>
+        </button>
+        <div class="story__body" id="${id}-body" role="region" aria-labelledby="${id}-toggle">
+          <div class="story__inner">
+            <header class="story__head">
+              ${s.status === 'wip' ? '<p class="story__tag story__tag--wip" data-i18n="workshop.wip"></p>' : `<p class="story__tag">${esc(s.name)}</p>`}
+              ${s.title ? `<h2>${esc(s.title)}</h2>` : ''}
+            </header>
+            ${(s.blocks || []).map(b => (b && BLOCKS[b.type] ? BLOCKS[b.type](b) : '')).join('')}
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  /* ---------- ссылки на соцсети и почта из content/site.json ---------- */
+  function applyLinks(scope) {
+    const site = window.SITE;
+    if (!site) return;
+    scope.querySelectorAll('[data-link]').forEach(a => { if (site[a.dataset.link]) a.href = site[a.dataset.link]; });
+    if (site.email) {
+      scope.querySelectorAll('[data-email]').forEach(a => { a.href = 'mailto:' + site.email; a.textContent = site.email; a.dataset.copyAlso = site.email; });
+      scope.querySelectorAll('[data-email-copy]').forEach(b => { b.dataset.copy = site.email; });
+    }
+  }
+
+  // всё, что строится из содержимого
+  function renderAll(scope) {
+    renderCatalog(scope);
+    renderLatest(scope);
+    renderStories(scope);
+    applyLinks(scope);
+    initStories(scope);
+    translate(scope, current);
   }
 
   /* ---------- переходы между страницами без перезагрузки ----------
@@ -216,23 +426,20 @@
   function swapTo(id, doc, dir) {
     const oldMain = document.querySelector('main:not(.page-old)');
     document.querySelectorAll('main.page-old').forEach(m => m.remove());
-    root.classList.remove('enter-left', 'enter-right', 'leave-left', 'leave-right');
     const newMain = document.importNode(doc.querySelector('main'), true);
-    // спрайт призрака есть только на главной — переносим его, если его ещё нет
+    // рисунок призрака (спрайт) есть на каждой странице; на всякий случай переносим, если его нет
     if (!document.getElementById('ghost')) {
       const sprite = doc.getElementById('ghost')?.closest('svg');
       if (sprite) document.body.prepend(document.importNode(sprite, true));
     }
     page = id;
     document.body.dataset.page = id;
-    renderCatalog(newMain);
-    initStories(newMain);
-    translate(newMain, current);
+    if (latestStop) { latestStop(); latestStop = null; }
+    renderAll(newMain);
     document.title = t(current, 'title.' + id);
     navInner.querySelectorAll('a[data-go]').forEach(a => {
       if (a.dataset.go === id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
-    session.set('fabbery-nav-last', id);
 
     if (!dir) { oldMain.replaceWith(newMain); scrollTo(0, 0); smoothReset(); return; }
 
@@ -262,7 +469,7 @@
   const absTop = el => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
   // своя плавная прокрутка: идёт в такт с раскрытием истории (та же длительность и кривая)
   let tween = 0;
-  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
   const scrollToY = (y, smooth) => {
     smoothReset();
     cancelAnimationFrame(tween);
@@ -277,7 +484,7 @@
     tween = requestAnimationFrame(step);
   };
   // если человек сам крутит колесо или тянет пальцем — не мешаем ему
-  ['wheel', 'touchstart', 'keydown'].forEach(t => addEventListener(t, () => cancelAnimationFrame(tween), { passive: true }));
+  ['wheel', 'touchstart', 'keydown'].forEach(type => addEventListener(type, () => cancelAnimationFrame(tween), { passive: true }));
   const setHash = hash => { try { history.replaceState(history.state, '', hash || location.pathname + location.search); } catch {} };
   function setStory(story, open, animate) {
     if (!animate) story.classList.add('no-anim');
@@ -366,7 +573,6 @@
   // страница из кэша «Назад»/«Вперёд» после ухода с сайта: вернуть всё на место
   window.addEventListener('pageshow', e => {
     if (!e.persisted) return;
-    root.classList.remove('leave-left', 'leave-right');
     active = page; bar.dataset.page = page; menu.close(); placePill(false);
   });
   window.addEventListener('resize', () => placePill(false));
@@ -391,7 +597,6 @@
   let current = FALLBACK;
   function translate(scope, l) {
     scope.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(l, el.dataset.i18n); });
-    scope.querySelectorAll('[data-only]').forEach(el => { el.hidden = !el.dataset.only.split(' ').includes(l); });
     scope.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(l, el.dataset.i18nAria)); });
   }
   function apply(l) {
@@ -402,6 +607,8 @@
     translate(document, l);
     langBtn.textContent = l;
     langBtn.setAttribute('aria-label', t(l, 'lang.button'));
+    updateCount();
+    themeLabel();
     langList.setAttribute('aria-label', t(l, 'lang.menu'));
     // список языков строится один раз, дальше меняется только отметка выбранного —
     // так открытое меню не мигает и не пропадает при смене языка
@@ -426,30 +633,13 @@
   });
 
   /* ---------- запуск ---------- */
-  renderCatalog(document);
-  initStories(document);
   apply(detect());
-  if (location.hash) requestAnimationFrame(() => scrollToHash(location.hash, false));
+  contentReady.then(() => {
+    renderAll(document.querySelector('main:not(.page-old)') || document);
+    updateCount();
+    if (location.hash) requestAnimationFrame(() => scrollToHash(location.hash, false));
+  });
 
-  // Если пункт выбрали из открытого списка, на новой странице список остаётся открытым:
-  // мышь ещё над ним. Как только мышь сдвинется за пределы списка — он свернётся.
-  const keep = session.get('fabbery-menu-keep');
-  session.del('fabbery-menu-keep');
-  if (keep === 'touch' && !reduceMotion) {
-    // телефон: меню видно, пока листается страница, потом оно плавно закрывается
-    menu.restore(false);
-    setTimeout(() => menu.close(), 700);
-  } else if (keep && canHover.matches && !reduceMotion) {
-    menu.restore(keep === 'pin');
-    if (keep === 'hover') {
-      document.addEventListener('mousemove', function firstMove(e) {
-        document.removeEventListener('mousemove', firstMove);
-        if (!menuDd.contains(e.target)) menu.closeIfUnhovered();
-      });
-    }
-  }
-  session.del('fabbery-nav-moved');
-  session.set('fabbery-nav-last', page);
   if (document.fonts) document.fonts.ready.then(() => placePill(false));
 
   /* ---------- кнопка «скопировать почту» ---------- */
@@ -475,6 +665,84 @@
     }
   });
 
+  /* ---------- призраки: глаза следят за курсором, иногда моргают, подпрыгивают от нажатия ---------- */
+  const ghosts = () => [...document.querySelectorAll('main use[href="#ghost"]')].map(u => u.ownerSVGElement).filter(Boolean);
+  let lookAt = null, lookRaf = 0;
+  function aimEyes() {
+    lookRaf = 0;
+    ghosts().forEach(g => {
+      if (!lookAt) { g.style.setProperty('--ex', '0px'); g.style.setProperty('--ey', '0px'); return; }
+      const r = g.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight || !r.width) return;
+      const dx = lookAt.x - (r.left + r.width / 2), dy = lookAt.y - (r.top + r.height * .48);
+      const d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 260);
+      g.style.setProperty('--ex', (dx / d * 6 * k).toFixed(2) + 'px');
+      g.style.setProperty('--ey', (dy / d * 5 * k).toFixed(2) + 'px');
+    });
+  }
+  const look = p => { lookAt = p; if (!lookRaf) lookRaf = requestAnimationFrame(aimEyes); };
+  addEventListener('pointermove', e => { if (e.pointerType === 'mouse') look({ x: e.clientX, y: e.clientY }); }, { passive: true });
+  document.addEventListener('mouseleave', () => look(null));
+  let lookTimer = 0;
+  addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    look({ x: e.clientX, y: e.clientY });            // на телефоне призраки смотрят туда, куда нажали
+    clearTimeout(lookTimer); lookTimer = setTimeout(() => look(null), 1400);
+  }, { passive: true });
+  addEventListener('scroll', () => { if (lookAt) look(lookAt); }, { passive: true });
+
+  if (!reduceMotion) {
+    (function blink() {
+      setTimeout(() => {
+        ghosts().forEach(g => {
+          if (Math.random() < .55) {
+            g.style.setProperty('--eb', '.12');
+            setTimeout(() => g.style.setProperty('--eb', '1'), 130);
+          }
+        });
+        blink();
+      }, 2600 + Math.random() * 2600);
+    })();
+  }
+
+  // нажми на призрака — подпрыгнет; пять раз подряд — пойдёт дождь из призраков
+  const GHOST_HIT = '.half__mascot, .half__santa, .card__ghost, .lost__ghost, .swatches svg';
+  let boos = 0, booTimer = 0;
+  document.addEventListener('click', e => {
+    const g = e.target.closest && e.target.closest(GHOST_HIT);
+    if (!g) return;
+    e.preventDefault(); e.stopPropagation();
+    g.classList.remove('boo'); void g.getBoundingClientRect(); g.classList.add('boo');
+    g.addEventListener('animationend', () => g.classList.remove('boo'), { once: true });
+    boos++; clearTimeout(booTimer); booTimer = setTimeout(() => { boos = 0; }, 1600);
+    if (boos >= 5) { boos = 0; ghostRain(); }
+  }, true);
+
+  function ghostRain() {
+    if (reduceMotion || document.querySelector('.ghost-rain')) return;
+    const box = document.createElement('div');
+    box.className = 'ghost-rain'; box.setAttribute('aria-hidden', 'true');
+    const colors = ['#FFFFFF', '#FFD84F', '#7FDBB6', '#FFA3CB', '#BFA9FF', '#A3C6FF'];
+    const NS = 'http://www.w3.org/2000/svg';
+    for (let i = 0; i < 28; i++) {
+      const s = document.createElementNS(NS, 'svg');
+      s.setAttribute('viewBox', '-10 -14 260 244');
+      const size = 28 + Math.random() * 44;
+      s.style.width = size + 'px';
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.setProperty('--g', colors[i % colors.length]);
+      s.style.setProperty('--dur', (1.8 + Math.random() * 1.6).toFixed(2) + 's');
+      s.style.setProperty('--delay', (Math.random() * .7).toFixed(2) + 's');
+      s.style.setProperty('--r0', (Math.random() * 60 - 30).toFixed(0) + 'deg');
+      s.style.setProperty('--r1', (Math.random() * 120 - 60).toFixed(0) + 'deg');
+      const u = document.createElementNS(NS, 'use');
+      u.setAttribute('href', '#ghost');
+      s.appendChild(u); box.appendChild(s);
+    }
+    document.body.appendChild(box);
+    setTimeout(() => box.remove(), 4200);
+  }
+
   /* ---------- карточки соцсетей: каждый раз отклоняются немного по-разному ---------- */
   document.addEventListener('pointerover', e => {
     const card = e.target.closest && e.target.closest('.where__card');
@@ -482,7 +750,7 @@
     const r = (a, b) => a + Math.random() * (b - a);
     const side = Math.random() < .5 ? -1 : 1;
     card.style.setProperty('--rot', (side * r(.8, 2.6)).toFixed(2) + 'deg');
-    card.style.setProperty('--ty', -r(5, 11).toFixed(1) + 'px');
+    card.style.setProperty('--ty', (-r(5, 11)).toFixed(1) + 'px');
     card.style.setProperty('--tx', (side * r(0, 3)).toFixed(1) + 'px');
   });
 

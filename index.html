@@ -3,6 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="darkreader-lock">
+  <!-- Тема (светлая/тёмная) ставится до отрисовки, чтобы страница не мигала -->
+  <script>try { var t = localStorage.getItem('fabbery-theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <title>fabbery — workshop and catalog of 3D-printable models</title>
   <meta name="description" content="fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.">
   <!-- Заставка показывается один раз за визит и не показывается тем, кто отключил анимации -->
@@ -12,21 +16,15 @@
         document.documentElement.classList.add('no-intro');
     } catch (e) {}
   </script>
-  <!-- Направление въезда страницы: определяется до отрисовки, чтобы не было мигания -->
-  <script>
-    (function () {
-      try {
-        var o = ['home', 'workshop', 'catalog'], p = 'home',
-            l = sessionStorage.getItem('fabbery-nav-last');
-        if (l && l !== p && o.indexOf(l) > -1 && !matchMedia('(prefers-reduced-motion: reduce)').matches)
-          document.documentElement.classList.add(o.indexOf(p) > o.indexOf(l) ? 'enter-right' : 'enter-left');
-      } catch (e) {}
-    })();
-  </script>
+  <link rel="canonical" href="https://fabbery.world/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="fabbery">
+  <meta property="og:title" content="fabbery — workshop and catalog of 3D-printable models">
+  <meta property="og:description" content="fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.">
+  <meta property="og:url" content="https://fabbery.world/">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/fonts/fredoka-600.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="assets/fonts/rubik-400.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body data-page="home">
@@ -39,8 +37,8 @@
       <path style="fill: var(--g, #FBFAFF)" d="M196 124 C214 112 222 92 216 80 C210 70 196 80 188 104" />
       <path style="fill: var(--g, #FBFAFF)" d="M40 118 C40 64 76 30 120 30 C164 30 200 64 200 118 V196 C200 210 190 216 180 208 C170 200 160 200 152 210 C144 220 132 222 124 212 C116 202 104 202 96 212 C88 222 76 220 70 210 C62 198 50 200 44 208 C40 212 40 206 40 198 Z" />
     </g>
-    <ellipse fill="#2E2147" cx="96" cy="112" rx="8" ry="11" />
-    <ellipse fill="#2E2147" cx="144" cy="112" rx="8" ry="11" />
+    <ellipse fill="#2E2147" cx="96" cy="112" rx="8" ry="11" style="transform-box: fill-box; transform-origin: center; transform: translate(var(--ex, 0px), var(--ey, 0px)) scaleY(var(--eb, 1)); transition: transform .14s ease-out" />
+    <ellipse fill="#2E2147" cx="144" cy="112" rx="8" ry="11" style="transform-box: fill-box; transform-origin: center; transform: translate(var(--ex, 0px), var(--ey, 0px)) scaleY(var(--eb, 1)); transition: transform .14s ease-out" />
     <ellipse fill="#FFC2DC" cx="80" cy="134" rx="11" ry="6" />
     <ellipse fill="#FFC2DC" cx="160" cy="134" rx="11" ry="6" />
     <path fill="none" stroke="#2E2147" stroke-width="5" stroke-linecap="round" d="M110 132 Q120 144 130 132" />
@@ -70,12 +68,18 @@
   </div>
 </div>
 
-<header class="top" id="siteHeader"></header>
+<header id="siteHeader"></header>
 
 <main>
-  <div class="slogan">
-    <p class="slogan__main" data-i18n="home.slogan">Just a simple 3D world</p>
-  </div>
+  <!-- главный заголовок страницы: для поисковиков и экранных читалок, на экране его роль играет шапка -->
+  <h1 class="sr-only">fabbery — designs for 3D printing, free to print</h1>
+  <!-- лента последних дизайнов: строится из content/catalog.json (редактируется в админке: /admin) -->
+  <section class="latest" data-latest>
+    <button class="latest__arrow latest__arrow--prev" type="button" data-i18n-aria="latest.prev" aria-label="Previous designs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="latest__view"><div class="latest__track"></div></div>
+    <button class="latest__arrow latest__arrow--next" type="button" data-i18n-aria="latest.next" aria-label="Next designs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <p class="latest__label"><span data-i18n="latest.title">Latest designs</span> <a href="catalog.html" data-i18n="latest.all">See all in the catalog</a></p>
+  </section>
   <section class="split">
     <!-- МАСТЕРСКАЯ -->
     <a class="half half--workshop" href="workshop.html">
@@ -97,7 +101,7 @@
       </svg>
       <div class="half__text">
         <h2 data-i18n="home.workshop.title">Workshop</h2>
-        <p data-i18n="home.workshop.text">What is on the bench right now: current projects, how they were developed, and models coming soon</p>
+        <p data-i18n="home.workshop.text">Stories of selected models: how they were made, first sketches and the prints that failed</p>
       </div>
       <!-- кнопка и призрак в одном ряду: призрак никогда не наезжает на текст -->
       <div class="half__row">
@@ -125,7 +129,7 @@
       <span class="blob blob--pink" aria-hidden="true"></span>
       <div class="half__text">
         <h2 data-i18n="home.catalog.title">Catalog</h2>
-        <p data-i18n="home.catalog.text">Released models and toys, each one test-printed and prepared for 3D printing</p>
+        <p data-i18n="home.catalog.text">Everything that is already released: models and toys, test-printed and ready for 3D printing</p>
       </div>
       <div class="half__row">
         <div class="half__santa" aria-hidden="true">
@@ -153,7 +157,7 @@
       <div class="f2p__text">
         <h2 class="f2p__words"><span>free</span> <span>to</span> <span>print</span></h2>
         <p data-i18n="about.text">Every model is free to download and print: for yourself, as a gift or just for fun. That is what f2p stands for: free to print.</p>
-        <p class="f2p__sell"><span data-i18n="about.sell">Want to sell prints?</span> <a href="https://www.patreon.com/" target="_blank" rel="noopener" data-i18n="about.sellLink">Grab a commercial license on Patreon</a></p>
+        <p class="f2p__sell"><span data-i18n="about.sell">Want to sell prints?</span> <a href="https://www.patreon.com/cw/fabbery" data-link="patreon" target="_blank" rel="noopener" data-i18n="about.sellLink">Grab a commercial license on Patreon</a></p>
         <p class="f2p__tools">
           <span data-i18n="about.tools">Everything is made in open-source software:</span>
           <span class="chip">Blender</span>
@@ -163,16 +167,16 @@
     </div>
 
     <!-- ГДЕ НАЙТИ. ССЫЛКИ: замени адреса на свои профили -->
-    <h2 class="where__title" data-i18n="where.title">Where to find me</h2>
+    <h2 class="where__title" data-i18n="where.title">Where to find my work</h2>
     <ul class="where">
-      <li><a class="where__card where__card--mint" href="https://makerworld.com/" target="_blank" rel="noopener">
-        <b>MakerWorld</b><span data-i18n="where.makerworld">Every model, free to download</span><i data-i18n="where.open">Open</i>
+      <li><a class="where__card where__card--mint" data-link="makerworld" href="https://makerworld.com/@fabbery" target="_blank" rel="noopener">
+        <b>MakerWorld</b><span data-i18n="where.makerworld">Every model, free to download</span><i class="where__hint"><em class="hover-only" data-i18n="where.click">Click to open</em><em class="touch-only" data-i18n="where.tap">Tap to open</em></i>
       </a></li>
-      <li><a class="where__card where__card--pink" href="https://www.pinterest.com/" target="_blank" rel="noopener">
-        <b>Pinterest</b><span data-i18n="where.pinterest">Renders of finished models</span><i data-i18n="where.open">Open</i>
+      <li><a class="where__card where__card--pink" data-link="pinterest" href="https://pinterest.com/fabbery_3d" target="_blank" rel="noopener">
+        <b>Pinterest</b><span data-i18n="where.pinterest">Renders of finished models</span><i class="where__hint"><em class="hover-only" data-i18n="where.click">Click to open</em><em class="touch-only" data-i18n="where.tap">Tap to open</em></i>
       </a></li>
-      <li><a class="where__card where__card--lemon" href="https://www.patreon.com/" target="_blank" rel="noopener">
-        <b>Patreon</b><span data-i18n="where.patreon">Support my work and get a commercial license</span><i data-i18n="where.open">Open</i>
+      <li><a class="where__card where__card--lemon" data-link="patreon" href="https://www.patreon.com/cw/fabbery" target="_blank" rel="noopener">
+        <b>Patreon</b><span data-i18n="where.patreon">Support my work and get a commercial license</span><i class="where__hint"><em class="hover-only" data-i18n="where.click">Click to open</em><em class="touch-only" data-i18n="where.tap">Tap to open</em></i>
       </a></li>
     </ul>
 
@@ -183,15 +187,14 @@
         <p data-i18n="mail.text">Want to suggest a model, team up or make a commercial offer? Write to me by email</p>
       </div>
       <div class="mail__actions">
-        <a class="mail__address" href="mailto:fabbery-f2p@proton.me" target="_blank" rel="noopener" data-copy-also="fabbery-f2p@proton.me">fabbery-f2p@proton.me</a>
-        <button class="mail__copy" type="button" data-copy="fabbery-f2p@proton.me" data-i18n="mail.copy">Copy</button>
+        <a class="mail__address" data-email href="mailto:fabbery-f2p@proton.me" target="_blank" rel="noopener" data-copy-also="fabbery-f2p@proton.me">fabbery-f2p@proton.me</a>
+        <button class="mail__copy" type="button" data-email-copy data-copy="fabbery-f2p@proton.me" data-i18n="mail.copy">Copy</button>
       </div>
     </div>
   </section>
 </main>
 
 <script src="assets/i18n.js"></script>
-<script src="assets/catalog.js"></script>
 <script src="assets/script.js"></script>
 </body>
 </html>

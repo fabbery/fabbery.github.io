@@ -1,0 +1,62 @@
+{
+  "latest": 8,
+  "collections": [
+    {
+      "name": "tiny ghosts",
+      "text": "Rounded little ghosts with raised arms and kaomoji faces",
+      "models": [
+        {
+          "name": "Tiny ghost 1",
+          "text": "Short description of the model",
+          "photo": "",
+          "bg": "mint",
+          "ghost": "#FBFAFF",
+          "link": "https://makerworld.com/@fabbery",
+          "released": "2026-10-20",
+          "story": "tiny-ghosts"
+        },
+        {
+          "name": "Tiny ghost 2",
+          "text": "Short description of the model",
+          "photo": "",
+          "bg": "lemon",
+          "ghost": "#D6C8FF",
+          "link": "https://makerworld.com/@fabbery",
+          "released": "2026-10-27",
+          "story": "tiny-ghosts"
+        },
+        {
+          "name": "Tiny ghost 3",
+          "text": "Short description of the model",
+          "photo": "",
+          "bg": "sky",
+          "ghost": "#FFE27A",
+          "link": "https://makerworld.com/@fabbery",
+          "released": "2026-11-03",
+          "story": "tiny-ghosts"
+        },
+        {
+          "name": "Tiny ghost 4",
+          "text": "Short description of the model",
+          "photo": "",
+          "bg": "pink",
+          "ghost": "#A8E6CF",
+          "link": "https://makerworld.com/@fabbery",
+          "released": "2026-11-10",
+          "story": "tiny-ghosts"
+        }
+      ]
+    }
+  ],
+  "upcoming": [
+    {
+      "name": "Halloween little pumpkin",
+      "text": "On the bench in the workshop right now",
+      "photo": "",
+      "bg": "lemon",
+      "ghost": "#FF8A5C",
+      "story": "pumpkin",
+      "show": true
+    }
+  ]
+}
