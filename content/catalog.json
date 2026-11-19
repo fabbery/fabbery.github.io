@@ -2,7 +2,14 @@
   "collections": [
     {
       "name": "Kaomoji designs",
-      "models": []
+      "models": [
+        {
+          "name": "Tiny pumpkins",
+          "text": "Following Halloween 2026, I had the idea to create some cute pumpkins featuring kaomoji (Japanese-style) faces. The collection includes 5 designs, each with a different face. They stand about 4 cm tall and are perfect as small figurines or keychains",
+          "photo": "/photos/render_main_new.webp",
+          "released": "2026-11-19"
+        }
+      ]
     },
     {
       "name": "More models",
