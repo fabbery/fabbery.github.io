@@ -6,8 +6,7 @@ const modalTitle = document.querySelector('#lightbox-title');
 const modalDescription = document.querySelector('#lightbox-description');
 const modalClose = document.querySelector('.modal-close');
 const latestGrid = document.querySelector('#latest-grid');
-const featuredModelsGrid = document.querySelector('#featured-models-grid');
-const moreModelsGrid = document.querySelector('#more-models-grid');
+const catalogGroups = document.querySelector('#catalog-groups');
 const modelCount = document.querySelector('.count-value');
 let lastImageTrigger = null;
 let isClosingPreview = false;
@@ -72,27 +71,82 @@ function createGallerySlot(model) {
   return slot;
 }
 
-function renderCatalog(models) {
-  const sourceModels = Array.isArray(models) && models.length ? models : fallbackModels;
-  if (modelCount) modelCount.textContent = Array.isArray(models) ? String(models.length) : '0';
-  const normalizedModels = sourceModels.map((model) => ({
+function normalizeModels(models) {
+  return (Array.isArray(models) ? models : []).map((model) => ({
     name: String(model?.name || 'Model title'),
     text: String(model?.text || 'Model description'),
     photo: typeof model?.photo === 'string' ? model.photo : '',
     released: String(model?.released || ''),
   }));
+}
 
-  const latestModels = [...normalizedModels].sort((first, second) => {
+function normalizeCollections(data) {
+  if (Array.isArray(data?.collections) && data.collections.length) {
+    return data.collections.map((collection, index) => ({
+      name: String(collection?.name || `Collection ${index + 1}`),
+      models: normalizeModels(collection?.models),
+    }));
+  }
+
+  if (Array.isArray(data?.models)) {
+    return [{ name: 'Featured models', models: normalizeModels(data.models) }];
+  }
+
+  return [];
+}
+
+function createFallbackCollections(collections) {
+  const names = collections.length
+    ? collections.map((collection) => collection.name)
+    : ['Featured models', 'More models'];
+  const fallbackCollections = names.map((name) => ({ name, models: [] }));
+  const targetCollections = fallbackCollections.length
+    ? fallbackCollections
+    : [{ name: 'Featured models', models: [] }];
+  const splitSize = Math.ceil(fallbackModels.length / targetCollections.length);
+
+  targetCollections.forEach((collection, index) => {
+    collection.models = fallbackModels.slice(index * splitSize, (index + 1) * splitSize);
+  });
+  return targetCollections;
+}
+
+function createCollectionGroup(collection, index) {
+  const group = document.createElement('section');
+  group.className = 'model-group';
+
+  const heading = document.createElement('h3');
+  const headingId = `gallery-group-title-${index + 1}`;
+  heading.id = headingId;
+  heading.textContent = collection.name;
+
+  const grid = document.createElement('div');
+  grid.className = 'model-grid';
+  grid.setAttribute('aria-label', collection.name);
+  grid.append(...collection.models.map(createGallerySlot));
+
+  group.setAttribute('aria-labelledby', headingId);
+  group.append(heading, grid);
+  return group;
+}
+
+function renderCatalog(data) {
+  const catalogCollections = normalizeCollections(data);
+  const catalogModels = catalogCollections.flatMap((collection) => collection.models);
+  const displayCollections = catalogModels.length
+    ? catalogCollections
+    : createFallbackCollections(catalogCollections);
+  const displayModels = displayCollections.flatMap((collection) => collection.models);
+
+  if (modelCount) modelCount.textContent = String(catalogModels.length);
+
+  const latestModels = [...(catalogModels.length ? catalogModels : fallbackModels)].sort((first, second) => {
     const firstDate = Date.parse(first.released) || 0;
     const secondDate = Date.parse(second.released) || 0;
-    return secondDate - firstDate || normalizedModels.indexOf(first) - normalizedModels.indexOf(second);
+    return secondDate - firstDate || displayModels.indexOf(first) - displayModels.indexOf(second);
   }).slice(0, 3);
   latestGrid.replaceChildren(...latestModels.map(createLatestCard));
-  const featuredModels = normalizedModels.slice(0, 6);
-  const moreModels = normalizedModels.slice(6);
-  featuredModelsGrid.replaceChildren(...featuredModels.map(createGallerySlot));
-  moreModelsGrid.replaceChildren(...moreModels.map(createGallerySlot));
-  moreModelsGrid.closest('.model-group').hidden = moreModels.length === 0;
+  catalogGroups.replaceChildren(...displayCollections.map(createCollectionGroup));
   prepareImageTriggers();
   updateModelGridColumns();
 }
@@ -102,9 +156,9 @@ async function loadCatalog() {
     const response = await fetch('./content/catalog.json', { cache: 'no-store' });
     if (!response.ok) throw new Error(`Catalog request failed: ${response.status}`);
     const data = await response.json();
-    renderCatalog(data.models);
+    renderCatalog(data);
   } catch {
-    renderCatalog([]);
+    renderCatalog({});
   }
 }
 
@@ -333,7 +387,7 @@ if (homePage && 'MutationObserver' in window) {
   contentObserver.observe(homePage, { childList: true, subtree: true });
 }
 
-renderCatalog([]);
+renderCatalog({});
 loadCatalog();
 loadSiteLinks();
 

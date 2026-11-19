@@ -9,8 +9,8 @@ backend:
     uploadMedia: "Upload {{path}}"
     deleteMedia: "Delete {{path}}"
 
-site_url: https://fabbery.github.io
-display_url: https://fabbery.github.io
+site_url: https://fabbery.world
+display_url: https://fabbery.world
 
 media_folder: photos
 public_folder: /photos
@@ -30,28 +30,37 @@ slug:
   encoding: ascii
 
 collections:
-  - name: models
+  - name: gallery
     label: Model gallery
-    description: Add a model photo, its title, description and Added on date. The three models with the freshest dates appear in Latest designs
+    description: Create, rename and reorder gallery collections, then add model photos, descriptions and Added on dates inside them. The three freshest models appear in Latest designs
     files:
-      - name: models
-        label: Models
+      - name: catalog
+        label: Collections
         file: content/catalog.json
         format: json
         fields:
-          - name: models
-            label: Models
-            label_singular: model
+          - name: collections
+            label: Collections
+            label_singular: collection
             widget: list
             required: false
-            add_to_top: true
             collapsed: true
             summary: "{{fields.name}}"
             fields:
-              - { name: name, label: Model name, widget: string }
-              - { name: text, label: Description, widget: text, required: false }
-              - { name: photo, label: Photo, widget: image, required: false, choose_url: false, accept: "image/*" }
-              - { name: released, label: Added on, widget: datetime, format: YYYY-MM-DD, time_format: false, default: "{{now}}", required: true }
+              - { name: name, label: Collection name, widget: string }
+              - name: models
+                label: Models in this collection
+                label_singular: model
+                widget: list
+                required: false
+                add_to_top: true
+                collapsed: true
+                summary: "{{fields.name}}"
+                fields:
+                  - { name: name, label: Model name, widget: string }
+                  - { name: text, label: Description, widget: text, required: false }
+                  - { name: photo, label: Photo, widget: image, required: false, choose_url: false, accept: "image/*" }
+                  - { name: released, label: Added on, widget: datetime, format: YYYY-MM-DD, time_format: false, default: "{{now}}", required: true }
   - name: settings
     label: Site links
     description: Manage the links used by the Patreon, Pinterest and Instagram buttons
