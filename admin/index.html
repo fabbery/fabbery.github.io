@@ -1,39 +1,12 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title>fabbery — editor</title>
-  <link rel="icon" href="data:,">
-</head>
-<body>
-  <!-- Sveltia CMS: редактор содержимого сайта. Читает config.yml из этой же папки.
-       Сначала берётся копия редактора, лежащая рядом (admin/sveltia-cms.js), — она не зависит от чужих серверов.
-       Если её нет, редактор грузится с unpkg.com, а если и он недоступен — с jsdelivr.net.
-       Важно: редактор подключается обычным скриптом, без type="module" — иначе он не запускается. -->
-  <script>
-    (function () {
-      var sources = [
-        './sveltia-cms.js',
-        'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js',
-        'https://cdn.jsdelivr.net/npm/@sveltia/cms/dist/sveltia-cms.js'
-      ];
-      function load(i) {
-        if (i >= sources.length) {
-          document.body.insertAdjacentHTML('beforeend',
-            '<p style="font:16px/1.5 sans-serif;max-width:32em;margin:15vh auto;padding:0 20px">' +
-            'The editor could not be loaded. Upload <b>sveltia-cms.js</b> to the <b>admin</b> folder of the repository, ' +
-            'or try another network.</p>');
-          return;
-        }
-        var s = document.createElement('script');
-        s.src = sources[i];
-        s.onerror = function () { s.remove(); load(i + 1); };
-        document.body.appendChild(s);
-      }
-      load(0);
-    })();
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>fabbery — admin</title>
+  </head>
+  <body>
+    <script src="./sveltia-cms.js"></script>
+  </body>
 </html>

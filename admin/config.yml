@@ -1,19 +1,17 @@
-# Настройки админки fabbery (Sveltia CMS).
-# Единственное, что нужно поменять: NICKNAME в строке repo — твой ник на GitHub.
 backend:
   name: github
   repo: fabbery/fabbery.github.io
   branch: main
+  auth_methods:
+    - token
   commit_messages:
     update: "Update {{collection}}"
     uploadMedia: "Upload {{path}}"
     deleteMedia: "Delete {{path}}"
 
-site_url: https://fabbery.world
-display_url: https://fabbery.world
+site_url: https://fabbery.github.io
+display_url: https://fabbery.github.io
 
-# Загруженные фото лежат в репозитории в папке photos (то есть на том же сервере, что и сайт).
-# Перед загрузкой редактор сам переводит их в WebP и уменьшает до 2000 px — сайт не тяжелеет.
 media_folder: photos
 public_folder: /photos
 media_libraries:
@@ -32,217 +30,37 @@ slug:
   encoding: ascii
 
 collections:
-  # =============== КАТАЛОГ ===============
-  - name: catalog
-    label: Catalog
-    description: Collections of released models, and models coming soon. The counter in the header and the "Latest designs" strip update on their own.
+  - name: models
+    label: Model gallery
+    description: Add a model photo, its title, description and Added on date. The three models with the freshest dates appear in Latest designs
     files:
-      - name: catalog
-        label: Catalog
+      - name: models
+        label: Models
         file: content/catalog.json
         format: json
         fields:
-          - name: collections
-            label: Collections
-            label_singular: collection
+          - name: models
+            label: Models
+            label_singular: model
             widget: list
             required: false
             add_to_top: true
             collapsed: true
             summary: "{{fields.name}}"
-            hint: "A collection appears on the site once it has at least one model."
             fields:
-              - { name: name, label: Collection name, widget: string }
+              - { name: name, label: Model name, widget: string }
               - { name: text, label: Description, widget: text, required: false }
-              - name: models
-                label: Models
-                label_singular: model
-                widget: list
-                required: false
-                collapsed: true
-                summary: "{{fields.name}} · {{fields.released}}"
-                fields:
-                  - { name: name, label: Model name, widget: string }
-                  - { name: text, label: Short description, widget: text, required: false, hint: "Up to about three lines are shown on the card." }
-                  - { name: photo, label: Photo, widget: image, required: false, choose_url: false, accept: "image/*", hint: "Drag a file here or pick one from the library. Square photos look best. Without a photo the card shows a ghost." }
-                  - { name: link, label: MakerWorld link, widget: string, type: url, required: false, hint: "Link to this model on MakerWorld. Empty — no “Get on MakerWorld” button." }
-                  - name: story
-                    label: Story in the workshop
-                    widget: relation
-                    collection: workshop
-                    file: stories
-                    value_field: "stories.*.id"
-                    display_fields: ["stories.*.name"]
-                    search_fields: ["stories.*.name"]
-                    required: false
-                    hint: "Pick a story to show a “Read the story” button. Leave empty — no button."
-                  - { name: released, label: Release date, widget: datetime, format: YYYY-MM-DD, time_format: false, default: "{{now}}", required: false }
-                  - &card_bg
-                    name: bg
-                    label: Card color
-                    widget: select
-                    default: mint
-                    options:
-                      - { label: Mint, value: mint }
-                      - { label: Pink, value: pink }
-                      - { label: Lemon, value: lemon }
-                      - { label: Lilac, value: lilac }
-                      - { label: Sky, value: sky }
-                  - &ghost_color { name: ghost, label: Ghost color (only shown without a photo), widget: color, required: false, default: "#FBFAFF" }
-
-          - name: upcoming
-            label: Coming soon
-            label_singular: upcoming model
-            widget: list
-            required: false
-            collapsed: true
-            summary: "{{fields.name}}"
-            hint: "Models that are not out yet. When one is released: add it as a model to a collection, then delete it here (or switch “Show on the site” off)."
-            fields:
-              - { name: show, label: Show on the site, widget: boolean, default: true }
-              - { name: name, label: Name, widget: string }
-              - { name: text, label: Short text, widget: string, required: false, hint: "For example: On the bench in the workshop right now" }
               - { name: photo, label: Photo, widget: image, required: false, choose_url: false, accept: "image/*" }
-              - name: story
-                label: Story in the workshop
-                widget: relation
-                collection: workshop
-                file: stories
-                value_field: "stories.*.id"
-                display_fields: ["stories.*.name"]
-                search_fields: ["stories.*.name"]
-                required: false
-                hint: "If picked, the card opens this story."
-              - *card_bg
-              - *ghost_color
-
-          - { name: latest, label: How many models in “Latest designs” on the home page, widget: number, value_type: int, min: 3, max: 20, default: 8 }
-
-  # =============== МАСТЕРСКАЯ ===============
-  - name: workshop
-    label: Workshop
-    description: Stories of models. Each story is built from blocks — add headings, text and photo frames in any order.
-    files:
-      - name: stories
-        label: Stories
-        file: content/stories.json
-        format: json
-        fields:
-          - name: stories
-            label: Stories
-            label_singular: story
-            widget: list
-            required: false
-            collapsed: true
-            summary: "{{fields.name}}"
-            fields:
-              - { name: id, label: Id, widget: uuid, use_b32_encoding: true, hint: "Created automatically. Used to link catalog cards to this story." }
-              - { name: name, label: Name, widget: string, hint: "Shown on the collapsed block and in the catalog story picker." }
-              - { name: subtitle, label: Subtitle, widget: string, required: false }
-              - name: status
-                label: Status
-                widget: select
-                default: released
-                options:
-                  - { label: Released, value: released }
-                  - { label: In progress, value: wip }
-              - { name: title, label: Big title inside the story, widget: string, required: false }
-              - { name: icon_photo, label: Icon photo (optional), widget: image, required: false, choose_url: false, accept: "image/*", hint: "Without a photo the icon is a ghost in the colors below." }
-              - name: icon_bg
-                label: Icon background
-                widget: select
-                default: mint
-                options: [mint, pink, lemon, lilac, sky]
-              - { name: icon_color, label: Icon ghost color, widget: color, default: "#FBFAFF" }
-              - name: blocks
-                label: Content
-                label_singular: block
-                widget: list
-                required: false
-                collapsed: auto
-                hint: "Add blocks with the button below, drag them to reorder."
-                types:
-                  - name: heading
-                    label: Heading
-                    summary: "Heading · {{fields.text}}"
-                    fields:
-                      - { name: text, label: Heading, widget: string }
-                  - name: subheading
-                    label: Subheading
-                    summary: "Subheading · {{fields.text}}"
-                    fields:
-                      - { name: text, label: Subheading, widget: string }
-                  - name: text
-                    label: Text
-                    summary: "Text · {{fields.body | truncate(50)}}"
-                    fields:
-                      - name: body
-                        label: Text
-                        widget: markdown
-                        minimal: true
-                        modes: [rich_text]
-                        buttons: [bold, italic, link, bulleted-list, numbered-list]
-                        editor_components: []
-                      - { name: large, label: Larger text (for an intro), widget: boolean, default: false }
-                  - name: photos
-                    label: Photo frames
-                    summary: "Photos · {{fields.layout}}"
-                    fields:
-                      - name: layout
-                        label: Layout
-                        widget: select
-                        default: three
-                        options:
-                          - { label: Three in a row, value: three }
-                          - { label: Two in a row, value: two }
-                          - { label: One big photo, value: one }
-                      - name: tape
-                        label: Tape color
-                        widget: select
-                        default: yellow
-                        options:
-                          - { label: Yellow, value: yellow }
-                          - { label: Pink, value: pink }
-                      - name: photos
-                        label: Photos
-                        label_singular: photo
-                        widget: list
-                        required: false
-                        summary: "{{fields.caption}}"
-                        fields:
-                          - { name: image, label: Photo, widget: image, required: false, choose_url: false, accept: "image/*", hint: "Drag a file here or pick one from the library. Empty — a “photo coming soon” frame." }
-                          - { name: caption, label: Caption, widget: string, required: false }
-                  - name: colors
-                    label: Color variants
-                    summary: "Colors"
-                    fields:
-                      - name: colors
-                        label: Colors
-                        label_singular: color
-                        widget: list
-                        required: false
-                        summary: "{{fields.name}}"
-                        fields:
-                          - { name: name, label: Color name, widget: string }
-                          - { name: color, label: Color, widget: color, default: "#FBFAFF" }
-                          - { name: kept, label: Made it into the catalog, widget: boolean, default: true }
-                  - name: callout
-                    label: Closing banner
-                    summary: "Banner · {{fields.text}}"
-                    fields:
-                      - { name: text, label: Text, widget: string }
-                      - { name: button, label: Add a “See them in the catalog” button, widget: boolean, default: true }
-
-  # =============== ССЫЛКИ ===============
+              - { name: released, label: Added on, widget: datetime, format: YYYY-MM-DD, time_format: false, default: "{{now}}", required: true }
   - name: settings
-    label: Links and email
+    label: Site links
+    description: Manage the links used by the Patreon, Pinterest and Instagram buttons
     files:
       - name: site
-        label: Links and email
+        label: Patreon, Pinterest and Instagram
         file: content/site.json
         format: json
         fields:
-          - { name: makerworld, label: MakerWorld, widget: string, type: url }
-          - { name: pinterest, label: Pinterest, widget: string, type: url }
-          - { name: patreon, label: Patreon, widget: string, type: url }
-          - { name: email, label: Email, widget: string, type: email }
+          - { name: patreon, label: Patreon URL, widget: string, type: url, required: false }
+          - { name: pinterest, label: Pinterest URL, widget: string, type: url, required: false }
+          - { name: instagram, label: Instagram URL, widget: string, type: url, required: false }

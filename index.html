@@ -1,200 +1,110 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="darkreader-lock">
-  <!-- Тема (светлая/тёмная) ставится до отрисовки, чтобы страница не мигала -->
-  <script>try { var t = localStorage.getItem('fabbery-theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; } catch (e) {}</script>
-  <title>fabbery — workshop and catalog of 3D-printable models</title>
-  <meta name="description" content="fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.">
-  <!-- Заставка показывается один раз за визит и не показывается тем, кто отключил анимации -->
-  <script>
-    try {
-      if (sessionStorage.getItem('fabbery-intro') || matchMedia('(prefers-reduced-motion: reduce)').matches)
-        document.documentElement.classList.add('no-intro');
-    } catch (e) {}
-  </script>
-  <link rel="canonical" href="https://fabbery.world/">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="fabbery">
-  <meta property="og:title" content="fabbery — workshop and catalog of 3D-printable models">
-  <meta property="og:description" content="fabbery is a workshop of 3D-printable models and toys: current projects, how they are made, and a catalog of print-ready models.">
-  <meta property="og:url" content="https://fabbery.world/">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="assets/fonts/fredoka-600.woff" as="font" type="font/woff" crossorigin>
-  <link rel="preload" href="assets/fonts/rubik-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="assets/styles.css">
-</head>
-<body data-page="home">
-
-<!-- Призрак: один рисунок для заставки и главной -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="ghost" viewBox="0 0 240 230">
-    <g stroke="#2E2147" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
-      <path style="fill: var(--g, #FBFAFF)" d="M44 124 C26 112 18 92 24 80 C30 70 44 80 52 104" />
-      <path style="fill: var(--g, #FBFAFF)" d="M196 124 C214 112 222 92 216 80 C210 70 196 80 188 104" />
-      <path style="fill: var(--g, #FBFAFF)" d="M40 118 C40 64 76 30 120 30 C164 30 200 64 200 118 V196 C200 210 190 216 180 208 C170 200 160 200 152 210 C144 220 132 222 124 212 C116 202 104 202 96 212 C88 222 76 220 70 210 C62 198 50 200 44 208 C40 212 40 206 40 198 Z" />
-    </g>
-    <ellipse fill="#2E2147" cx="96" cy="112" rx="8" ry="11" style="transform-box: fill-box; transform-origin: center; transform: translate(var(--ex, 0px), var(--ey, 0px)) scaleY(var(--eb, 1)); transition: transform .14s ease-out" />
-    <ellipse fill="#2E2147" cx="144" cy="112" rx="8" ry="11" style="transform-box: fill-box; transform-origin: center; transform: translate(var(--ex, 0px), var(--ey, 0px)) scaleY(var(--eb, 1)); transition: transform .14s ease-out" />
-    <ellipse fill="#FFC2DC" cx="80" cy="134" rx="11" ry="6" />
-    <ellipse fill="#FFC2DC" cx="160" cy="134" rx="11" ry="6" />
-    <path fill="none" stroke="#2E2147" stroke-width="5" stroke-linecap="round" d="M110 132 Q120 144 130 132" />
-  </symbol>
-</svg>
-
-<!-- Заставка: призрак печатается слоями, потом фон уезжает вверх, за ним призрак -->
-<div class="intro" id="intro" aria-hidden="true">
-  <div class="intro__bg"></div>
-  <div class="intro__stage">
-    <div class="intro__print">
-      <svg viewBox="0 0 240 230">
-        <defs>
-          <pattern id="layerLines" width="8" height="6" patternUnits="userSpaceOnUse"><rect y="5" width="8" height="1.2" fill="#2E2147" opacity=".16" /></pattern>
-          <clipPath id="ghostClip">
-            <path d="M40 118 C40 64 76 30 120 30 C164 30 200 64 200 118 V196 C200 210 190 216 180 208 C170 200 160 200 152 210 C144 220 132 222 124 212 C116 202 104 202 96 212 C88 222 76 220 70 210 C62 198 50 200 44 208 C40 212 40 206 40 198 Z" />
-            <path d="M44 124 C26 112 18 92 24 80 C30 70 44 80 52 104 Z" />
-            <path d="M196 124 C214 112 222 92 216 80 C210 70 196 80 188 104 Z" />
-          </clipPath>
-        </defs>
-        <use href="#ghost" />
-        <rect class="intro__layers" width="240" height="230" fill="url(#layerLines)" clip-path="url(#ghostClip)" />
-      </svg>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171716" />
+    <meta name="description" content="Fabbery — 3D models made for printing." />
+    <title>Fabbery — 3D models for printing</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient-orbs" aria-hidden="true">
+      <span class="ambient-orb orb-one"></span>
+      <span class="ambient-orb orb-two"></span>
+      <span class="ambient-orb orb-three"></span>
+      <span class="ambient-orb orb-four"></span>
+      <span class="ambient-orb orb-five"></span>
+      <span class="ambient-orb orb-six"></span>
+      <span class="ambient-orb orb-seven"></span>
+      <span class="ambient-orb orb-eight"></span>
+      <span class="ambient-orb orb-nine"></span>
+      <span class="ambient-orb orb-ten"></span>
     </div>
-    <span class="intro__nozzle"><i></i></span>
-    <span class="intro__plate"></span>
-  </div>
-</div>
-
-<header id="siteHeader"></header>
-
-<main>
-  <!-- главный заголовок страницы: для поисковиков и экранных читалок, на экране его роль играет шапка -->
-  <h1 class="sr-only">fabbery — designs for 3D printing, free to print</h1>
-  <!-- лента последних дизайнов: строится из content/catalog.json (редактируется в админке: /admin) -->
-  <section class="latest" data-latest>
-    <button class="latest__arrow latest__arrow--prev" type="button" data-i18n-aria="latest.prev" aria-label="Previous designs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <div class="latest__view"><div class="latest__track"></div></div>
-    <button class="latest__arrow latest__arrow--next" type="button" data-i18n-aria="latest.next" aria-label="Next designs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-    <p class="latest__label"><span data-i18n="latest.title">Latest designs</span> <a href="catalog.html" data-i18n="latest.all">See all in the catalog</a></p>
-  </section>
-  <section class="split">
-    <!-- МАСТЕРСКАЯ -->
-    <a class="half half--workshop" href="workshop.html">
-      <svg class="half__drawing" viewBox="0 0 420 300" aria-hidden="true">
-        <g class="d-part">
-          <path d="M60 40 H104 V190 H300 V236 H60 Z" />
-          <circle cx="82" cy="80" r="10" /><circle cx="82" cy="146" r="10" />
-          <circle cx="190" cy="213" r="10" /><circle cx="250" cy="213" r="10" />
-        </g>
-        <path class="d-axis" d="M82 54 V176 M50 80 H114 M50 146 H114 M190 182 V246 M250 182 V246" />
-        <g class="d-dim">
-          <path d="M60 254 V270 M300 254 V270 M60 262 H300 M34 40 H50 M34 236 H50 M42 40 V236 M314 190 H330 M314 236 H330 M322 190 V236" />
-          <path class="d-arrow" d="M60 262 l9 -3.5 v7 z M300 262 l-9 -3.5 v7 z M42 40 l-3.5 9 h7 z M42 236 l-3.5 -9 h7 z M322 190 l-3.5 9 h7 z M322 236 l-3.5 -9 h7 z" />
-          <text x="180" y="286" text-anchor="middle">120</text>
-          <text x="26" y="142" text-anchor="middle" transform="rotate(-90 26 142)">98</text>
-          <text x="338" y="218">23</text>
-          <text x="120" y="118">2× ⌀10</text>
-        </g>
-      </svg>
-      <div class="half__text">
-        <h2 data-i18n="home.workshop.title">Workshop</h2>
-        <p data-i18n="home.workshop.text">Stories of selected models: how they were made, first sketches and the prints that failed</p>
-      </div>
-      <!-- кнопка и призрак в одном ряду: призрак никогда не наезжает на текст -->
-      <div class="half__row">
-        <span class="half__cta" data-i18n="home.workshop.cta">Open workshop</span>
-        <div class="half__mascot" aria-hidden="true">
-          <svg class="float float--late" viewBox="-10 -14 260 244">
-            <use href="#ghost" />
-            <!-- строительная каска: купол с рёбрами жёсткости, козырёк и блик -->
-            <g transform="rotate(-8 120 40)" stroke="#2E2147" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
-            <path fill="#FFD24D" d="M64 60 C62 22 92 2 120 2 C148 2 178 22 176 60 Z" />
-            <path fill="#F0B429" stroke-width="4" d="M108 4.5 Q120 1 132 4.5 L135 58 L105 58 Z" />
-            <path fill="none" stroke-width="3.5" d="M86 16 Q78 36 80 58 M154 16 Q162 36 160 58" />
-            <path fill="#FFD24D" d="M46 58 Q120 48 194 58 Q202 62 196 68 Q120 60 44 68 Q38 62 46 58 Z" />
-            <path fill="none" stroke="#FFF6D6" stroke-width="5" d="M80 30 Q88 16 100 12" />
-            </g>
-          </svg>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Fabbery home">fabbery</a>
+      <span class="model-count"><span class="count-value">—</span> models released</span>
+    </header>
+    <main>
+      <div class="pages-viewport">
+        <div class="pages-track" data-active="home">
+          <section class="page-panel home-page" aria-labelledby="home-title">
+            <div class="home-hero">
+              <div class="intro">
+                <h1 id="home-title">Welcome to fabbery</h1>
+                <p>I design every model with 3D printing in mind, so it’s ready to bring to life</p>
+              </div>
+              <div class="home-actions" aria-label="Fabbery links">
+                <a class="social-link" data-site-link="patreon" href="https://www.patreon.com/cw/fabbery" target="_blank" rel="noopener noreferrer">
+                  <span>Get access to the collection</span>
+                </a>
+              </div>
+            </div>
+            <div class="home-content">
+              <section class="home-section featured-section" aria-labelledby="home-featured-title">
+                <h2 id="home-featured-title">Latest designs</h2>
+                <p class="section-lead">A quick look at the newest models</p>
+                <div class="featured-grid" id="latest-grid"></div>
+              </section>
+              <section class="home-section benefits-section" aria-labelledby="benefits-title">
+                <h2 id="benefits-title">What you get with Patreon</h2>
+                <p class="patreon-intro">All models featured here are included in my paid Patreon membership</p>
+                <div class="benefits-grid">
+                  <article class="benefit-item"><h3>Full collection access</h3><p>Access to the complete collection of fabbery designs</p></article>
+                  <article class="benefit-item"><h3>Vote on upcoming designs</h3><p>Help shape future releases by voting on new designs</p></article>
+                  <article class="benefit-item"><h3>Commercial use and sales</h3><p>Permission to use the models commercially and sell your printed creations</p></article>
+                </div>
+                <div class="gallery-description patreon-description">
+                  <p>Besides the models themselves, the paid Patreon membership also includes my personal <strong>3MF</strong> file, with settings adapted and <strong>tested by me on a Bambu Lab A1 mini</strong>, as well as <strong>high-quality</strong> photos and renders you can use for personal and commercial purposes</p>
+                </div>
+                <div class="patreon-action">
+                  <a class="social-link" data-site-link="patreon" href="https://www.patreon.com/cw/fabbery" target="_blank" rel="noopener noreferrer">Join Patreon</a>
+                </div>
+              </section>
+              <section class="home-section catalog-section" id="home-gallery" aria-labelledby="catalog-title">
+                <h2 id="catalog-title">A complete gallery of 3D-printable designs</h2>
+                <div class="model-groups">
+                  <section class="model-group" aria-labelledby="home-featured-models-title">
+                    <h3 id="home-featured-models-title">Featured models</h3>
+                    <div class="model-grid" id="featured-models-grid" aria-label="Featured models"></div>
+                  </section>
+                  <section class="model-group" aria-labelledby="home-more-models-title">
+                    <h3 id="home-more-models-title">More models</h3>
+                    <div class="model-grid" id="more-models-grid" aria-label="More models"></div>
+                  </section>
+                </div>
+              </section>
+              <section class="home-section about-section" aria-labelledby="about-title">
+                <h2 id="about-title">About fabbery</h2>
+                <p>Fabbery is the creator name I use for my work, and I want it to become associated with high-quality toys. I’m a young engineering student exploring 3D modeling and design, with a focus on creating durable, sturdy and structurally considered pieces made to scale to series production. Each one is designed to make a great gift, feel good to play with and look great on display</p>
+              </section>
+            </div>
+            <footer class="site-footer">
+              <div class="footer-main">
+                <span class="footer-brand">fabbery</span>
+                <span>© 2026 fabbery · All photos and works are original fabbery creations</span>
+                <div class="footer-links">
+                  <a data-site-link="patreon" href="https://www.patreon.com/cw/fabbery" target="_blank" rel="noopener noreferrer">Patreon</a>
+                  <a data-site-link="pinterest" href="https://pinterest.com/fabbery_3d" target="_blank" rel="noopener noreferrer">Pinterest</a>
+                  <a data-site-link="instagram" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                </div>
+              </div>
+            </footer>
+          </section>
         </div>
       </div>
-    </a>
-
-    <!-- КАТАЛОГ -->
-    <a class="half half--catalog" href="catalog.html">
-      <span class="blob blob--lemon" aria-hidden="true"></span>
-      <span class="blob blob--mint" aria-hidden="true"></span>
-      <span class="blob blob--pink" aria-hidden="true"></span>
-      <div class="half__text">
-        <h2 data-i18n="home.catalog.title">Catalog</h2>
-        <p data-i18n="home.catalog.text">Everything that is already released: models and toys, test-printed and ready for 3D printing</p>
-      </div>
-      <div class="half__row">
-        <div class="half__santa" aria-hidden="true">
-          <svg class="float" viewBox="-10 -14 260 244">
-            <use href="#ghost" />
-            <!-- шапка Деда Мороза -->
-            <g transform="rotate(-8 120 40)" stroke="#2E2147" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
-              <path fill="#E5484D" d="M70 54 Q92 -10 152 4 Q196 16 214 62 Q194 42 172 40 L176 56 Z" />
-              <circle fill="#FBFAFF" cx="214" cy="66" r="13" />
-              <rect fill="#FBFAFF" x="56" y="44" width="128" height="20" rx="10" />
-            </g>
-          </svg>
+    </main>
+    <div class="image-modal" hidden>
+      <div class="modal-backdrop" data-lightbox-close></div>
+      <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" aria-describedby="lightbox-description">
+        <button class="modal-close" type="button" aria-label="Close image preview">×</button>
+        <div class="modal-image" aria-label="Image preview"></div>
+        <div class="modal-details">
+          <h2 id="lightbox-title">Model title</h2>
+          <p id="lightbox-description">Model description</p>
         </div>
-        <span class="half__cta" data-i18n="home.catalog.cta">Browse catalog</span>
-      </div>
-    </a>
-  </section>
-
-  <p class="idea wrap"><span data-i18n="home.tagline">Designs for 3D printing, always</span> <span class="slogan__f2p"><span>free</span> <span>to</span> <span>print</span></span></p>
-
-  <!-- ОБ АВТОРЕ: принцип f2p и программы -->
-  <section class="wrap about">
-    <div class="f2p">
-      <p class="f2p__mark" aria-hidden="true"><span>f</span><span>2</span><span>p</span></p>
-      <div class="f2p__text">
-        <h2 class="f2p__words"><span>free</span> <span>to</span> <span>print</span></h2>
-        <p data-i18n="about.text">Every model is free to download and print: for yourself, as a gift or just for fun. That is what f2p stands for: free to print.</p>
-        <p class="f2p__sell"><span data-i18n="about.sell">Want to sell prints?</span> <a href="https://www.patreon.com/cw/fabbery" data-link="patreon" target="_blank" rel="noopener" data-i18n="about.sellLink">Grab a commercial license on Patreon</a></p>
-        <p class="f2p__tools">
-          <span data-i18n="about.tools">Everything is made in open-source software:</span>
-          <span class="chip">Blender</span>
-          <span class="chip">FreeCAD</span>
-        </p>
-      </div>
+      </section>
     </div>
-
-    <!-- ГДЕ НАЙТИ. ССЫЛКИ: замени адреса на свои профили -->
-    <h2 class="where__title" data-i18n="where.title">Where to find my work</h2>
-    <ul class="where">
-      <li><a class="where__card where__card--mint" data-link="makerworld" href="https://makerworld.com/@fabbery" target="_blank" rel="noopener">
-        <b>MakerWorld</b><span data-i18n="where.makerworld">Every model, free to download</span><i class="where__hint"><em class="hover-only" data-i18n="where.click">Click to open</em><em class="touch-only" data-i18n="where.tap">Tap to open</em></i>
-      </a></li>
-      <li><a class="where__card where__card--pink" data-link="pinterest" href="https://pinterest.com/fabbery_3d" target="_blank" rel="noopener">
-        <b>Pinterest</b><span data-i18n="where.pinterest">Renders of finished models</span><i class="where__hint"><em class="hover-only" data-i18n="where.click">Click to open</em><em class="touch-only" data-i18n="where.tap">Tap to open</em></i>
-      </a></li>
-      <li><a class="where__card where__card--lemon" data-link="patreon" href="https://www.patreon.com/cw/fabbery" target="_blank" rel="noopener">
-        <b>Patreon</b><span data-i18n="where.patreon">Support my work and get a commercial license</span><i class="where__hint"><em class="hover-only" data-i18n="where.click">Click to open</em><em class="touch-only" data-i18n="where.tap">Tap to open</em></i>
-      </a></li>
-    </ul>
-
-    <!-- Связаться: идеи и коммерческие предложения -->
-    <div class="mail">
-      <div class="mail__text">
-        <h2 data-i18n="mail.title">Have an idea or a proposal?</h2>
-        <p data-i18n="mail.text">Want to suggest a model, team up or make a commercial offer? Write to me by email</p>
-      </div>
-      <div class="mail__actions">
-        <a class="mail__address" data-email href="mailto:fabbery-f2p@proton.me" target="_blank" rel="noopener" data-copy-also="fabbery-f2p@proton.me">fabbery-f2p@proton.me</a>
-        <button class="mail__copy" type="button" data-email-copy data-copy="fabbery-f2p@proton.me" data-i18n="mail.copy">Copy</button>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script src="assets/i18n.js"></script>
-<script src="assets/script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
