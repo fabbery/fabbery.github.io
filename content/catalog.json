@@ -1,3 +1,10 @@
 {
-  "models": []
+  "models": [
+    {
+      "name": "Tiny pumpkins collection",
+      "text": "Following Halloween 2026, I had the idea to create some cute pumpkins featuring kaomoji (Japanese-style emoticon) faces. The collection includes 5 models, each with a different expression. They stand about 4 cm tall and are perfect as small figurines or keychains",
+      "photo": "/photos/render_main_new.webp",
+      "released": "2026-11-19"
+    }
+  ]
 }
