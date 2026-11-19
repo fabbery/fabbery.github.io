@@ -4,6 +4,12 @@
       "name": "Kaomoji designs",
       "models": [
         {
+          "name": "Tiny ghosts collection",
+          "text": "When I first opened Blender, I was really keen to create my own toy. At the time, I had no experience with 3D, and it took me about four days to make these simple, minimalist ghosts. They turned out really lovely and were easy to 3D print—and that was the moment I realized how much I enjoy making toys.",
+          "photo": "/photos/8d809584be7c4cc824b553f23b0c5615.webp",
+          "released": "2026-11-19"
+        },
+        {
           "name": "Tiny pumpkins",
           "text": "Following Halloween 2026, I had the idea to create some cute pumpkins featuring kaomoji (Japanese-style) faces. The collection includes 5 designs, each with a different face. They stand about 4 cm tall and are perfect as small figurines or keychains",
           "photo": "/photos/render_main_new.webp",
